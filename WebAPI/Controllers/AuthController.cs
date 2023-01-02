@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
             var userDto = _mapper.Map<List<UserDto>>(response.ToList());
 
             return Ok(userDto);
-        }
+    }
 
         [HttpPost("login")]
         public async Task<IActionResult> LoginTask(string email, string pass)
