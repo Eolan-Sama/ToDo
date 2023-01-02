@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NLayer.Core.DTO;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
@@ -14,10 +13,12 @@ namespace WebAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IService<User> _service;
         private readonly IService<Todo> _todoService;
-        public AuthController(IService<User> service, IMapper mapper)
+        public AuthController(IService<User> service, IMapper mapper, IService<Todo> todoService)
         {
             _mapper = mapper;
+            _todoService = todoService;
             _service = service;
+            
         }
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
@@ -51,8 +52,8 @@ namespace WebAPI.Controllers
                 var LoggedInUser =   _service.Where(x => x.Email == email && x.Password == pass).FirstOrDefault();
                 var CurrentUser = _mapper.Map<UserAuthDto>(LoggedInUser);
                 var CurrentUsersTodo = _todoService.Where(x => x.UserId == CurrentUser.Id);
-                //var CurrentUsersTodoDto = _mapper.Map<List<TodoDto>>(CurrentUsersTodo.ToList());
-                return Ok(CurrentUsersTodo);
+                var CurrentUsersTodoDto = _mapper.Map<List<TodoDto>>(CurrentUsersTodo.ToList());
+                return Ok(CurrentUsersTodoDto);
             }
             return Ok(true);
         }

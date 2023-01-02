@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using Azure;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NLayer.Core.DTO;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
-using System.Linq.Expressions;
 
 namespace WebAPI.Controllers
 {
@@ -53,23 +50,23 @@ namespace WebAPI.Controllers
          public async Task<IActionResult> Where(int userId)
          {
              var todo = _service.Where(x => x.UserId == userId);
-             var todosDto = _mapper.Map<List<TodoDto>>(todo.ToList());
-             return Ok(todosDto);
+             var todoDto = _mapper.Map<List<TodoDto>>(todo.ToList());
+             return Ok(todoDto);
          }
         [HttpPost]
 
         public async Task<IActionResult> Save(TodoDto todoDto)
         {
             var todo = await _service.AddAsync(_mapper.Map<Todo>(todoDto));
-            var todosDto = _mapper.Map<TodoDto>(todo);
-            return Ok(todosDto);
+            var newTodoDto = _mapper.Map<TodoDto>(todo);
+            return Ok(newTodoDto);
         }
         [HttpPut]
 
         public async Task<IActionResult> Update(TodoDto todoDto)
         {
             await _service.UpdateAsync(_mapper.Map<Todo>(todoDto));
-            return Ok(204);
+            return Ok(todoDto);
         }
         [HttpDelete("{id}")]
 
