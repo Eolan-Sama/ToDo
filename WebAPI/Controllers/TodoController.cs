@@ -37,11 +37,11 @@ namespace WebAPI.Controllers
             return Ok(todoDto);
         }
 
-         [HttpGet("status/{status}")]
+         [HttpGet("{UserId}/{status}")]
 
-         public async Task<IActionResult> Where(string status)
+         public async Task<IActionResult> Where(string status,int UserId)
          {
-             var todo =  _service.Where( x => x.Status == status );
+             var todo = _service.Where(x => x.Status == status && x.UserId == UserId);
              var todosDto = _mapper.Map<List<TodoDto>>(todo.ToList());
              return Ok(todosDto);
          }
@@ -73,7 +73,8 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Remove(int id)
         {
             var todo = await _service.GetByIdAsync(id);
-            await _service.RemoveAsync(todo);
+            todo.IsDeleted=true;
+            await _service.RemoveAsync(_mapper.Map<Todo>(todo));
             return Ok(204);
         }
     }

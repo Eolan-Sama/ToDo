@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NLayer.Core.DTO;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
+using NLayer.Service.Services.Authentication;
 
 namespace WebAPI.Controllers
 {
@@ -10,54 +11,27 @@ namespace WebAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IService<User> _service;
-        private readonly IService<Todo> _todoService;
-        public AuthController(IService<User> service, IMapper mapper, IService<Todo> todoService)
+        private readonly IAuthService<User> _authService;
+        public AuthController(IAuthService<User> authService)
         {
-            _mapper = mapper;
-            _todoService = todoService;
-            _service = service;
+            _authService = authService;
+            
             
         }
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(UserAuthDto request)
         {
-            var userSave = await _service.AddAsync(_mapper.Map<User>(request));
-            var usersDto = _mapper.Map<UserDto>(userSave);
-            return Ok(usersDto);
+            var RegisterUser = _authService.Register(request);
+            return Ok(RegisterUser);
             
         }
-        [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            var response = await _service.GetAllAsync();
-            var userDto = _mapper.Map<List<UserDto>>(response.ToList());
-
-            return Ok(userDto);
-    }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginTask(string email, string pass)
+        public async Task<IActionResult> LoginTask(UserAuthDto request)
         {
-            var response = await _service.AnyAsync(x => x.Email == email && x.Password == pass);
-            //var userDto = _mapper.Map<UserDto>(response);
-            if (response == false)
-            {
-                return Ok("Email yada Sifre Hatali");
-            }
-
-            if (response == true)
-            {
-                var LoggedInUser =   _service.Where(x => x.Email == email && x.Password == pass).FirstOrDefault();
-                var CurrentUser = _mapper.Map<UserAuthDto>(LoggedInUser);
-                var CurrentUsersTodo = _todoService.Where(x => x.UserId == CurrentUser.Id);
-                var CurrentUsersTodoDto = _mapper.Map<List<TodoDto>>(CurrentUsersTodo.ToList());
-                return Ok(new {
-                    CurrentUsersTodoDto,CurrentUser
-                });
-            }
-            return Ok(true);
+            var LoginUser = _authService.Login(request);
+            
+            return Ok(LoginUser);
         }
     }
     

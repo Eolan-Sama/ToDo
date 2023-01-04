@@ -1,10 +1,7 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
-using NLayer.Core.Models;
+﻿namespace NLayer.Core.DTO;
 
 
-namespace NLayer.Core.DTO
-{
-    public class UserDto
+    public class UserOutDto
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -12,6 +9,4 @@ namespace NLayer.Core.DTO
         public string Email { get; set; }
         public string Password { get; set; }
 
-        public string JwtToken { get; set; }
     }
-}

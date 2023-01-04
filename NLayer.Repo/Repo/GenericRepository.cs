@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using NLayer.Core.DTO;
 using NLayer.Core.Models;
 using NLayer.Core.Repo;
 using NLayer.Repository;
@@ -22,6 +23,16 @@ namespace NLayer.Repo.Repo
             return await _dbSet.FindAsync(id);
         }
 
+        public async Task<T> GetByToken(string token)
+        {
+            return await _dbSet.FindAsync(token);
+        }
+
+        public async Task<T> GetByMail(string mail)
+        {
+            return await _dbSet.FindAsync(mail);
+        }
+
 
         public IQueryable<T> GetAll()
         {
@@ -37,6 +48,7 @@ namespace NLayer.Repo.Repo
         {
             return await _dbSet.AnyAsync(expression);
         }
+
 
         public async Task AddAsync(T entity)
         {

@@ -14,7 +14,9 @@ namespace NLayer.Service.Mapping
         public MapProfile()
         {
             CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<User, UserAuthDto>();
+            CreateMap<UserDto, UserAuthDto>().ReverseMap();
+            CreateMap<User, UserOutDto>().ReverseMap();
+            CreateMap<User, UserAuthDto>().ReverseMap();
             CreateMap<Todo, TodoDto>().ReverseMap();
         }
         

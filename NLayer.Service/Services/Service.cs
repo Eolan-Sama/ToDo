@@ -10,6 +10,7 @@ namespace NLayer.Service.Services
     {
             private readonly IGenericRepository<T> _repository;
             private readonly IUnitOfWork _unitOfWork;
+           
 
             public Service(IGenericRepository<T> repository, IUnitOfWork unitOfWork)
             {
@@ -21,6 +22,16 @@ namespace NLayer.Service.Services
             {
                 return await _repository.GetByIdAsync(id);
             }
+
+            public async Task<T> GetByMail(string mail)
+            {
+                return await _repository.GetByMail(mail);
+            }
+
+            public async Task<T> GetByToken(string token)
+            {
+            return await _repository.GetByToken(token);
+        }
 
 
             public async Task<IEnumerable<T>> GetAllAsync()

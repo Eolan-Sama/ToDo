@@ -1,5 +1,9 @@
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NLayer.Core.Repo;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
@@ -8,6 +12,7 @@ using NLayer.Repo.UnitOfWorks;
 using NLayer.Repository;
 using NLayer.Service.Mapping;
 using NLayer.Service.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,11 +35,37 @@ builder.Services.AddDbContext<AppDbContext>(x =>
     });
 });
 var app = builder.Build();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                {
+                    context.Response.Headers.Add("Token-Expired", "true");
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(); ;
     app.UseSwaggerUI();
 }
 
